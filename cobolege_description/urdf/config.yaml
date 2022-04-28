@@ -1,0 +1,138 @@
+#
+# The general parameters
+#
+general:
+  # The frame in which the CSV trajectories are written (once transformed with the first two lines)
+  csv_trajectory_frame: world
+  # Parameters for collision
+  collision:
+    # The list of bodies that are allowed to be in contact with the obstacle
+    obstacle_allowed_bodies: [baselink,wire]
+    ignored: false
+  # Parameters for IK
+  ik:
+    # The base link used for IK
+    link_base: baselink
+    # The tip link used for IK
+    link_tip: tcp
+    # The IK timeout, in seconds
+    timeout: 0.005
+    # The Cartesian error tolerance, used in IK (used as epsilon in KDL::Equal() on KDL::Twist resulting from KDL::diff() )
+    cartesian_error_tol: 0.0005
+  # Parameters for the Cartesian linear trajectories time-parameterization
+  linear_trajectory:
+    # The maximum rotation velocity, in rad/s
+    max_vel_rotation: 1.0
+    # The maximum translation acceleration, in m/s^2
+    max_acc_translation: 0.25
+    # The maximum rotation acceleration, in rad/s^2
+    max_acc_rotation: 0.25
+  # Display parameters
+  display:
+    # The speed factor (e.g. x2) when displaying the resulting trajectory
+    speed_factor: 4.0
+
+#
+# The parameters for the interpolation of waypoints used for sampling
+#
+waypoint_interpolation:
+  # The maximum translation (in m) between two interpolated waypoints
+  max_translation: 0.01
+  # The maximum rotation (in rad) between two interpolated waypoints
+  max_rotation: 0.01
+
+#
+# The parameters for the IK-based sampler
+#
+sampler_ik:
+  # How many valid samples are requested per waypoint
+  n_samples_per_waypoint: 200
+  # How many attempts can be done per waypoint to get the requested number of valid samples
+  max_tries_per_waypoint: 200
+
+#
+# The parameters for the projection-based sampler
+#
+sampler_projection:
+  # How many valid samples are requested per sample
+  n_samples_per_sample: 10
+  # How many attempts can be done per sample to get the requested number of valid samples
+  max_tries_per_sample: 10
+  # The resolution at which we discretize a given displacement when projecting
+  resolution: [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 100000.0]
+
+#
+# The parameters for the projection-based sampler used for refinement after a shortest path has been found
+#
+sampler_projection_refinement:
+  # How many valid samples are requested per sample
+  n_samples_per_sample: 10
+  # How many attempts can be done per sample to get the requested number of valid samples
+  max_tries_per_sample: 10
+  # The resolution at which we discretize a given displacement when projecting
+  resolution: [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 100000.0]
+
+#
+# The parameters for the graph 
+#
+graph:
+  # The maximum jump (in c-space) between vertices linked by an edge
+  edge_max_c_space_jump: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1000.0]
+
+#
+# The parameters for the cost functions
+#
+# A negative weight implies that the cost function is not used
+#
+costs:
+  # The c-space distance-based cost function
+  c_space_distance:
+    weight_per_dof: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+  conf_distance:
+    - weight: 1.
+      skipped: [false, false, true, true, true, true, true]
+      joints: [0., 0.5, 0., 0., 0., 0., 0.]
+
+  # The joint limits-based cost function
+  joint_limits:
+    weight_per_dof: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0]
+    # The margin (in rad) per dof
+    margins_per_dof: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+  
+  # The manipulability-based cost function
+  manipulability:
+    # The list of dofs (indices) used in the computation of manipulability. Leave empty [] for all dofs.
+    selected_dofs: [1,2,3,4,5,6] # skip linear joint 0 and virtual joint 7
+    weight: -1
+
+  # The nearest collision-based cost function
+  nearest_collision:
+    # The links (names) for which nearest collisions are monitored
+    monitored_links: [supportTorche]
+    weight: 1.
+
+#
+# The parameters for the controller used as a local planner
+#
+controller:
+  # The time step used in the local planner
+  dt: 0.001
+  # The TCP used for control
+  link_tip: tcp_base
+  # The collision-checking resolution in c-space. Collision will be checked as soon as the increment on one of the dofs goes beyond these values
+  collision_resolution: [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 1000000.0]
+  # The Cartesian tolerance when checking that we reached the desired pose: translation (m)
+  task_space_tolerance_translation: 0.005
+  # The Cartesian tolerance when checking that we reached the desired pose: rotation (rad)
+  task_space_tolerance_rotation: 0.02
+  # The tolerance when checking that we reached the desired configuration. Make sure that it is lower than controller:c_space_max_step
+  c_space_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
+  # The maximum step allowed at an iteration of the controller. Used to clip joint position increments when trying to reach the desired configuration.
+  c_space_max_step: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 10000.0]
+  # The Proportional gain for (secondary) joint task
+  joint_kp: 1 #2
+  # The Derivative gain for (secondary) joint task
+  joint_kd: 0 #0.00005
+  # The acceleration limit per joint
+  joint_limits_acceleration: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 100000.0]

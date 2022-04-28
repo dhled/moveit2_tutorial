@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<!-- j2_6n refers to jaco v2 6DOF non-spherical -->
+
+
+<root xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+    xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+    xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+    xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+    xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+    xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+    xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+    xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+    xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+    xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
+    xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
+    xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+          <robotNamespace>cobolege</robotNamespace>
+          <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+          <legacyModeNS>true</legacyModeNS>
+        </plugin>
+    </gazebo>
+
+    <!--Joint Velocity Limits is about 0.9071111 which is roughly 50degree / seconds-->
+
+
+    <!--
+    Joint Macro that create a joint with kinova naming convention 
+    Robot Name is the prefixed robot name to all the joint names
+    Joint Name is the joint name (should be unique for all the joints)
+    parent_link is the parent link of this joint
+    child_link is the child link of this joint
+    axis is the revolution axis of the joint (i.e. "1 0 0" for a rotation around x)
+    origin is the position of the joint in the parent link frame
+    limit lower and limit upper are the limit of each joints in position (in rads)
+    limit effort is the torque limit of the joint (not used)
+    limit velocity is the velocity limit of the joint (here it' s around ~50degree)
+    -->
+    <xacro:macro name="cobolege_joint" params="robot_name 
+                                               joint_name 
+                                               parent_link
+                                               child_link
+                                               axis
+                                               *origin
+                                               limit_lower:=${-pi}
+                                               limit_upper:=${pi}
+                                               limit_effort:=10.0
+                                               limit_velocity:=0.9" 
+                                               >
+        <joint name="${robot_name}_${joint_name}" type="revolute">
+            <parent link="${parent_link}" />
+            <child link = "${child_link}" />
+            <xacro:insert_block name="origin" />
+            <axis xyz="${axis}" />
+            <limit lower="${limit_lower}" upper="${limit_upper}" effort="${limit_effort}" velocity="${limit_velocity}" />
+        </joint>
+        <!--Gazebo Stuff-->
+        <!--transmission name="${joint_name}_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${robot_name}_${joint_name}">
+              <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${joint_name}_actuator">
+              <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+              <mechanicalReduction>160</mechanicalReduction>
+            </actuator>
+         </transmission-->
+    </xacro:macro>
+
+    <!--
+    Link Macro that create a link to simplify the build of the urdf
+    link_name is the name of the link
+    mesh_file is the name of the file (with the extension). It should be situated in the meshes/stl folder
+    collision_file is the name of the file (with the extension). It should be situated in the meshes/collision folder
+    origin the origin of the collision and mesh files in the current link frame
+    -->
+    <xacro:macro name="cobolege_link" params="link_name
+                                              mesh_file
+                                              collision_file
+                                              *origin"
+                                                        >
+
+        <link name="${link_name}">
+            <visual>
+                <xacro:insert_block name="origin"/>
+                <geometry>
+                    <mesh filename="package://cobolege_description/meshes/visual/${mesh_file}"/>
+                </geometry>
+            </visual>
+            <collision>
+                <xacro:insert_block name="origin"/>
+                <geometry>
+                    <mesh filename="package://cobolege_description/meshes/collision/${collision_file}"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="1" />
+                <inertia
+                    ixx="1.0" ixy="0.0" ixz="0.0"
+                    iyy="1.0" iyz="0.0"
+                    izz="1.0" />
+            </inertial>
+        </link>
+
+    </xacro:macro>
+
+
+    <xacro:macro name="cobolege">
+        <xacro:property name="robot_name" value="c2n6s000"/>
+        <xacro:cobolege_link link_name="base_link"
+            mesh_file="Base.dae"
+            collision_file="Base.stl">
+            <origin xyz="0 0.0 0" rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link1"
+            mesh_file="Link1.dae"
+            collision_file="Link1.stl">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link2"
+            mesh_file="Link2.dae"
+            collision_file="Link2.stl">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link3"
+            mesh_file="Link3.dae"
+            collision_file="Link3.stl">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link4"
+            mesh_file="Link4.dae"
+            collision_file="Link4.stl">
+            <origin  xyz="0 0 0 " rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link5"
+            mesh_file="Link5.dae"
+            collision_file="Link5.stl">
+            <origin xyz="0 0 0 " rpy="0 0 0" />
+        </xacro:cobolege_link>
+        <xacro:cobolege_link link_name="link6"
+            mesh_file="Link6.dae"
+            collision_file="Link6.stl">
+            <origin xyz="0 0 0 " rpy="0 0 0" />
+        </xacro:cobolege_link>
+
+        <link name="end_effector">
+        </link>
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_1"
+            parent_link="base_link"
+            child_link="link1"
+            axis="0 0 1"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="10.0"
+            limit_velocity="0.9"> 
+            <origin xyz="0 0 +1.5767e-01" rpy="0 0 0" />
+        </xacro:cobolege_joint>
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_2"
+            parent_link="link1"
+            child_link="link2"
+            axis="0 1 0"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="50.0"
+            limit_velocity="0.18">
+            <origin xyz="0 -1.8797e-02 +5.4745e-02" rpy="0 0 0" />
+        </xacro:cobolege_joint>
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_3"
+            parent_link="link2"
+            child_link="link3"
+            axis="0 1 0"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="30.0"
+            limit_velocity="0.3">
+            <origin xyz="0.400 +5.9995e-03 0" rpy="0.0 0 0.0" />
+        </xacro:cobolege_joint>
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_4"
+            parent_link="link3"
+            child_link="link4"
+            axis="1 0 0"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="10.0"
+            limit_velocity="0.9">
+            <origin xyz="+1.2540e-01 +3.5376e-02 0.0" rpy="0 0.0 0" />
+        </xacro:cobolege_joint>
+
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_5"
+            parent_link="link4"
+            child_link="link5"
+            axis="0 1 0"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="10.0"
+            limit_velocity="0.9">
+            <origin xyz="+1.9188e-01 -3.0250e-02 0" rpy="0 0.0 0" />
+        </xacro:cobolege_joint>
+
+        <xacro:cobolege_joint robot_name="${robot_name}" 
+            joint_name="joint_6"
+            parent_link="link5"
+            child_link="link6"
+            axis="1 0 0"
+            limit_lower="${-pi}"
+            limit_upper="${pi}"
+            limit_effort="10.0"
+            limit_velocity="0.9">
+            <origin xyz="+2.2750e-02 -8.3250e-02 0" rpy="0 0.0 0" />
+        </xacro:cobolege_joint>
+
+
+        <joint name="fixed_endeffector" type="fixed">
+            <parent link="link6" />
+            <child link="end_effector" />
+            <origin xyz="+4.1015e-02 0 0.0" rpy="0 0 0" />
+        </joint>
+    </xacro:macro>
+
+
+</root>

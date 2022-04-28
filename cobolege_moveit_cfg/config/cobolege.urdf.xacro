@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cobolege_v0">
+
+    <!-- Import urdf file -->
+    <xacro:include filename="$(find cobolege_description)/urdf/cobolege_torche.urdf" />
+
+    <!-- Import panda ros2_control description -->
+    <xacro:include filename="cobolege.ros2_control.xacro" />
+
+    <xacro:cobolege_ros2_control name="CobolegeFakeSystem"/>
+</robot>

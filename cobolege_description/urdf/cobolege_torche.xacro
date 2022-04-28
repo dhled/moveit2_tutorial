@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!-- c2n6s300 refers to jaco v2 6DOF non-spherical 3fingers -->
+
+
+<robot xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+    xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+	xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+    xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+    xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+    xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
+    xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
+	xmlns:xacro="http://www.ros.org/wiki/xacro" name="cobolege_v0">
+
+
+  <xacro:include filename="$(find cobolege_description)/urdf/cobolege.xacro"/>
+
+  <link name="root"/>
+
+  <!-- for gazebo -->
+  <link name="world"/>
+  
+  <joint name="connect_root_and_world" type="fixed">
+    <child link="root" />
+    <parent link="world" />
+    <origin xyz="0 0 0" rpy="0 0 0" />    
+  </joint> 
+
+
+  <xacro:property name="robot_root" value="root" />
+
+  <xacro:cobolege/>
+
+  <link name="tcp_torche">
+      <visual>
+          <origin  xyz="+2.7294e-02 +3.9027e-02 -1.6754e-01" rpy="-0.4411884 -0.5479314 0.7889799" />
+          <geometry>
+              <mesh filename="package://cobolege_description/meshes/visual/Torche.dae"/>
+          </geometry>
+      </visual>
+      <collision>
+          <origin  xyz="+2.7294e-02 +3.9027e-02 -1.6754e-01" rpy="-0.4411884 -0.5479314 0.7889799" />
+          <geometry>
+              <mesh filename="package://cobolege_description/meshes/collision/Torche.stl"/>
+          </geometry>
+      </collision>
+  </link>
+
+  <joint name="tcp_torche_joint" type="fixed">
+    <child link="tcp_torche" />
+    <parent link="end_effector" />
+    <origin xyz="+2.4658e-01 -9.7899e-02 -5.8759e-02" rpy="0 2.070327 0" />
+
+  </joint>
+
+  <joint name="fixed_baselink" type="fixed">
+    <parent link="root" />
+    <child link = "base_link" />
+    <origin xyz="0 0 0.0" rpy="0 0 0" />
+  </joint>
+
+</robot>

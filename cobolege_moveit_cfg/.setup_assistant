@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: cobolege_description
+    relative_path: urdf/cobolege_torche.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/cobolege_v0.srdf
+  CONFIG:
+    author_name: Ldl
+    author_email: ldl@irtjv.fr
+    generated_timestamp: 1651169719
