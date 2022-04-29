@@ -1,0 +1,107 @@
+cobolege:
+  effort_joint_trajectory_controller:
+    constraints:
+      joint1:
+        goal: 0.02
+        trajectory: 0.05
+      joint2:
+        goal: 0.02
+        trajectory: 0.05
+      joint3:
+        goal: 0.02
+        trajectory: 0.05
+      joint4:
+        goal: 0.02
+        trajectory: 0.05
+      joint5:
+        goal: 0.02
+        trajectory: 0.05
+      joint6:
+        goal: 0.02
+        trajectory: 0.05
+      goal_time: 1.0
+      stopped_velocity_tolerance: 0.02
+    gains:
+      joint1:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 5000
+      joint2:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 5000
+      joint3:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 5000
+      joint4:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 800
+      joint5:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 200
+      joint6:
+        d: 0
+        i: 0
+        i_clamp: 10
+        p: 500
+    joints:
+    - joint1
+    - joint2
+    - joint3
+    - joint4
+    - joint5
+    - joint6
+    type: effort_controllers/JointTrajectoryController
+  joint_1_position_controller:
+    joint: joint1
+    pid:
+      d: 0
+      i: 0
+      p: 5000
+    type: effort_controllers/JointPositionController
+  joint_2_position_controller:
+    joint: joint2
+    pid:
+      d: 0
+      i: 0
+      p: 5000
+    type: effort_controllers/JointPositionController
+  joint_3_position_controller:
+    joint: joint3
+    pid:
+      d: 0
+      i: 0
+      p: 5000
+    type: effort_controllers/JointPositionController
+  joint_4_position_controller:
+    joint: joint4
+    pid:
+      d: 0
+      i: 0
+      p: 800
+    type: effort_controllers/JointPositionController
+  joint_5_position_controller:
+    joint: joint5
+    pid:
+      d: 0
+      i: 0
+      p: 200
+    type: effort_controllers/JointPositionController
+  joint_6_position_controller:
+    joint: joint6
+    pid:
+      d: 0
+      i: 0
+      p: 500
+    type: effort_controllers/JointPositionController
+  joint_state_controller:
+    publish_rate: 50
+    type: joint_state_controller/JointStateController

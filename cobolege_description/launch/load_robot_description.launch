@@ -1,0 +1,7 @@
+<launch>
+	<param name="robot_description" command="$(find xacro)/xacro.py '$(find cobolege_description)/urdf/cobolege_standalone.xacro'" />
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+        <remap from="/joint_states" to="/c2n6s000_driver/out/joint_state"/>
+    </node>
+</launch>
